@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Panel de Reporte — Vista previa (datos de ejemplo)</title>
+<title>Panel de Reporte — Heineken Six</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
@@ -66,34 +66,15 @@
 
   <!-- =====================================================================
        PANEL DEL DESARROLLADOR — configuración inicial del reporte.
-       Todo lo de aquí es tuyo, el cliente nunca ve este bloque.
   ====================================================================== -->
   <section id="devPanel" class="panel p-6 rounded-2xl mb-8">
     <div class="section-title"><span class="dot"></span> Panel de configuración <span class="line"></span></div>
 
-    <!-- Título + filtro ODV/ID -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-      <div class="md:col-span-2">
-        <label class="field-label">Título del reporte</label>
-        <input id="cfgTitulo" type="text" value="Heineken Six — Junio" class="w-full px-3 py-2 rounded-lg text-sm" />
-      </div>
-      <div>
-        <label class="field-label">Buscar por</label>
-        <select id="cfgTipoFiltro" class="w-full px-3 py-2 rounded-lg text-sm">
-          <option value="odv">ODV (campaign_name)</option>
-          <option value="id">ID de campaña</option>
-        </select>
-      </div>
-      <div>
-        <label class="field-label">Valor a buscar</label>
-        <input id="cfgValorBusqueda" type="text" placeholder="ej. 71-26" value="SIX-JUN26" class="w-full px-3 py-2 rounded-lg text-sm" />
-      </div>
+    <div class="mb-4">
+      <label class="field-label">Título del reporte</label>
+      <input id="cfgTitulo" type="text" value="Heineken Six — Junio" class="w-full md:w-1/2 px-3 py-2 rounded-lg text-sm" />
     </div>
-    <p class="text-[11px] text-[var(--text-soft)] mb-4">
-      Si eliges "ID de campaña" pero alguna tabla marcada no tiene esa columna (Quantcast y Hivestack no la tienen), esa tabla busca por ODV automáticamente.
-    </p>
 
-    <!-- Fechas: SOLO se editan aquí. El cliente ya no puede moverlas. -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <div>
         <label class="field-label">Fecha inicio</label>
@@ -105,14 +86,29 @@
       </div>
       <div class="md:col-span-2 flex items-end">
         <p class="text-[11px] text-[var(--text-soft)] chip px-3 py-2 rounded-lg">
-          ⚠️ Una vez generado, el cliente ve <b>solo</b> este rango — no puede ampliarlo. Es un candado de interfaz; el candado "de verdad" (a prueba de que alguien llame la función directo) llega con el login por cliente que dejamos pendiente.
+          ⚠️ Una vez generado, el cliente ve <b>solo</b> este rango — no puede ampliarlo. Es un candado de interfaz; el candado "de verdad" llega con el login por cliente que dejamos pendiente.
         </p>
       </div>
     </div>
 
-    <!-- Sources: TODAS las tablas reales, agrupadas por plataforma -->
     <div class="mb-4">
       <label class="field-label mb-2">Sources — todas las tablas reales (sin noisia, sin tablas de prueba)</label>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="field-label">ODV (texto libre, contiene)</label>
+          <input id="cfgOdv" type="text" placeholder="ej. SIX-JUN26" value="SIX-JUN26" class="w-full px-3 py-2 rounded-lg text-sm" />
+        </div>
+        <div class="relative">
+          <label class="field-label">ID de campaña (busca en vivo, puedes elegir varios — se combinan con OR)</label>
+          <div id="idChipsBox" class="w-full min-h-[38px] px-2 py-1.5 rounded-lg text-sm bg-[#F5F5F7] flex flex-wrap gap-1.5 items-center">
+            <input id="cfgIdBuscar" type="text" placeholder="escribe para buscar..." class="flex-1 min-w-[100px] bg-transparent px-1 py-0.5 text-sm outline-none" />
+          </div>
+          <div id="idSuggestions" class="hidden absolute z-10 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
+          <p class="text-[10px] text-[var(--text-soft)] mt-1">Solo busca en Simpli.fi/Eskimi (únicas con campaign_id). Si no seleccionas ningún ID, se usa el ODV.</p>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Simpli.fi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
@@ -121,33 +117,30 @@
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_device"> Device</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_contex"> Contexto</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_cross_conversion"> Cross Conversion</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_audience"> Audience</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_video"> Video</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simpli_geo_video" checked> Geo Video</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_video" checked> Video (creativos)</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simpli_geo_video"> Geo Video</label>
           <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="simplifi_conversion_lift" checked> Conversion Lift (Geo Lift)</label>
         </div>
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Eskimi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_performance" checked> Performance</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_creatives" checked> Creativos</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_gender_performance"> Género</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_age_performance"> Edad</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="eskimi_video_performance"> Video</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_gender_performance" checked> Género</label>
+          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="eskimi_age_performance" checked> Edad</label>
         </div>
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Quantcast <span class="text-[var(--text-soft)] font-normal">(solo ODV)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_report"> Report</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_report"> Report (edad/género/ingreso)</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_regions"> Regiones</label>
           <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="quantcast_creatives"> Creativos</label>
         </div>
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Hivestack <span class="text-[var(--text-soft)] font-normal">(solo ODV)</span></p>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="hivestack_performance"> Performance</label>
+          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="hivestack_performance"> Performance (pantallas)</label>
         </div>
       </div>
     </div>
 
-    <!-- Metas de campaña: libres, tú decides el tipo de venta -->
     <details class="text-sm mb-2" open>
       <summary class="cursor-pointer text-[var(--text-soft)] font-medium">Metas de campaña</summary>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-3">
@@ -168,20 +161,19 @@
           <input id="tipoVenta" type="text" placeholder="ej. CPM, CPC, Flat" value="CPM" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div>
-          <label class="field-label">Tarifa</label>
-          <input id="tarifaVenta" type="number" value="85" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <label class="field-label">Valor de venta</label>
+          <input id="venta" type="number" value="85" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
       </div>
       <p class="text-xs text-[var(--text-soft)] mt-3 mb-2">
         Métricas calculadas — variables: <code class="bg-[#F5F5F7] px-1 rounded">impressions</code>,
         <code class="bg-[#F5F5F7] px-1 rounded">clicks</code>, <code class="bg-[#F5F5F7] px-1 rounded">visits</code>,
-        <code class="bg-[#F5F5F7] px-1 rounded">ctr</code>, <code class="bg-[#F5F5F7] px-1 rounded">tarifa</code>.
+        <code class="bg-[#F5F5F7] px-1 rounded">ctr</code>, <code class="bg-[#F5F5F7] px-1 rounded">venta</code>.
       </p>
       <div id="formulasContainer" class="space-y-2"></div>
       <button id="addFormulaBtn" type="button" class="text-xs font-medium text-[var(--blue)] mt-2">+ Agregar métrica calculada</button>
     </details>
 
-    <!-- Títulos editables: por si el cliente pide otro nombre a una sección -->
     <details class="text-sm mb-4">
       <summary class="cursor-pointer text-[var(--text-soft)] font-medium">Personalizar títulos de sección</summary>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
@@ -217,13 +209,11 @@
       <button id="toggleDevBtn" class="text-xs font-medium px-3 py-1.5 rounded-full border border-[var(--border)]">Editar ↔ Vista cliente</button>
     </header>
 
-    <!-- KPI Cards -->
     <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hKpi">KPI Cards</span> <span class="line"></span></div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="kpiCards"></div>
     </section>
 
-    <!-- Performance -->
     <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hPerformance">Performance</span> <span class="line"></span></div>
       <div class="grid grid-cols-3 gap-4">
@@ -242,28 +232,26 @@
       </div>
     </section>
 
-    <!-- Geo Lift -->
     <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hGeoLift">Geo Lift</span> <span class="line"></span></div>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
         <div class="chip p-4 rounded-2xl">
           <p class="text-[10px] text-[var(--text-soft)] uppercase tracking-wide mb-1">Organic Visits</p>
-          <p class="text-xl font-bold">46,817</p>
+          <p class="text-xl font-bold">—</p>
         </div>
         <div class="chip p-4 rounded-2xl">
           <p class="text-[10px] text-[var(--text-soft)] uppercase tracking-wide mb-1">Campaign Visits</p>
-          <p class="text-xl font-bold">69,308</p>
+          <p class="text-xl font-bold">—</p>
         </div>
         <div class="chip p-4 rounded-2xl md:col-span-2">
           <p class="text-[10px] text-[var(--text-soft)] uppercase tracking-wide mb-1">Inc. Visitas</p>
-          <p class="text-xl font-bold gradient-text">148.04%</p>
+          <p class="text-xl font-bold gradient-text">—</p>
         </div>
       </div>
       <p class="text-xs text-[var(--text-soft)] mb-2">User Converters en el tiempo</p>
       <div id="chartGeoLift"></div>
     </section>
 
-    <!-- Geofence -->
     <section class="panel p-6 rounded-2xl mb-6 overflow-x-auto">
       <div class="section-title"><span class="dot"></span> <span id="hGeofence">Geofence Performance</span> <span class="line"></span></div>
       <table class="w-full text-sm">
@@ -275,7 +263,6 @@
       </table>
     </section>
 
-    <!-- Creativos -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div class="panel p-6 rounded-2xl overflow-x-auto">
         <div class="section-title"><span class="dot"></span> <span id="hCreativosNombre">Creativos · por nombre</span> <span class="line"></span></div>
@@ -297,7 +284,6 @@
       </div>
     </section>
 
-    <!-- Trend Analysis -->
     <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hTrend">Trend Analysis</span> <span class="line"></span></div>
       <div class="chip p-5 rounded-2xl">
@@ -306,7 +292,6 @@
       </div>
     </section>
 
-    <!-- Detailed Metrics -->
     <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hDetailed">Detailed Metrics</span> <span class="line"></span></div>
       <div class="chip p-5 rounded-2xl overflow-x-auto">
@@ -321,73 +306,52 @@
       </div>
     </section>
 
-    <!-- Audiencia detallada -->
-    <section class="panel p-6 rounded-2xl mb-10">
+    <section class="panel p-6 rounded-2xl mb-6">
       <div class="section-title"><span class="dot"></span> <span id="hAudiencia">Audiencia detallada</span> <span class="line"></span></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">Género</p>
+          <p class="text-xs text-[var(--text-soft)] mb-3">Género <span class="text-[10px] text-[var(--text-soft)]">(Eskimi / Quantcast)</span></p>
           <div class="flex items-center gap-4">
             <div id="donutGeneroMini" style="width:100px;flex-shrink:0;"></div>
             <div class="flex-1" id="legendGenero"></div>
           </div>
         </div>
         <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">Edad</p>
+          <p class="text-xs text-[var(--text-soft)] mb-3">Edad <span class="text-[10px] text-[var(--text-soft)]">(Eskimi / Quantcast)</span></p>
           <div class="flex items-center gap-4">
             <div id="donutEdad" style="width:100px;flex-shrink:0;"></div>
             <div class="flex-1" id="legendEdad"></div>
           </div>
         </div>
         <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">NSE</p>
+          <p class="text-xs text-[var(--text-soft)] mb-3">NSE / Ingreso <span class="text-[10px] text-[var(--text-soft)]">(solo Quantcast)</span></p>
           <div class="flex items-center gap-4">
             <div id="donutNSE" style="width:100px;flex-shrink:0;"></div>
             <div class="flex-1" id="legendNSE"></div>
           </div>
         </div>
-        <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">Estado civil <span class="text-[var(--pink)]">· sin confirmar</span></p>
-          <div class="flex items-center gap-4">
-            <div id="donutMarital" style="width:100px;flex-shrink:0;"></div>
-            <div class="flex-1" id="legendMarital"></div>
-          </div>
-        </div>
       </div>
+    </section>
+
+    <section id="secPantallas" class="panel p-6 rounded-2xl mb-10 overflow-x-auto hidden">
+      <div class="section-title"><span class="dot"></span> Pantallas (Hivestack) <span class="line"></span></div>
+      <table class="w-full text-sm">
+        <thead><tr class="text-left">
+          <th class="pb-2">Pantalla</th><th class="pb-2 text-right">Impresiones</th>
+        </tr></thead>
+        <tbody id="tablaPantallas"></tbody>
+      </table>
     </section>
 
   </div>
 </div>
 
 <script>
-/* =========================================================================
- * DATOS DE EJEMPLO — mismo shape que la Edge Function real regresará.
- * ========================================================================= */
-function generarSerieDiaria() {
-  const dias = [];
-  for (let i = 1; i <= 30; i++) {
-    const fecha = `2026-06-${String(i).padStart(2, "0")}`;
-    const impressions = Math.round(170000 + Math.random() * 60000);
-    const clicks = Math.round(impressions * (0.0013 + Math.random() * 0.0006));
-    const visits = Math.round(1800 + Math.random() * 900);
-    dias.push({ fecha, impressions, clicks, visits, ctr: Number(((clicks / impressions) * 100).toFixed(3)) });
-  }
-  return dias;
-}
-const serieDiaria = generarSerieDiaria();
+const EDGE_FUNCTION_URL = "https://ldqbqkimfhtwbojfysqo.supabase.co/functions/v1/TEST-HTML";
+
 const fmtNumero = new Intl.NumberFormat("es-MX");
 const fmtMoneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
 
-const totalesMock = {
-  impressions: serieDiaria.reduce((s, d) => s + d.impressions, 0),
-  clicks: serieDiaria.reduce((s, d) => s + d.clicks, 0),
-  visits: serieDiaria.reduce((s, d) => s + d.visits, 0),
-};
-totalesMock.ctr = Number(((totalesMock.clicks / totalesMock.impressions) * 100).toFixed(3));
-
-/* =========================================================================
- * EVALUADOR SEGURO DE FÓRMULAS (sin eval)
- * ========================================================================= */
 function evaluarFormula(expresion, variables) {
   const tokens = expresion.match(/([A-Za-z_][A-Za-z0-9_]*)|(\d+\.?\d*)|([+\-*/()])/g);
   if (!tokens) throw new Error("Fórmula vacía o inválida");
@@ -426,15 +390,15 @@ function agregarFilaFormula(labelDefault = "", exprDefault = "") {
   fila.className = "flex gap-2 items-center formula-row";
   fila.innerHTML = `
     <input type="text" placeholder="Nombre (ej. Spend)" value="${labelDefault}" class="formula-label flex-1 px-2 py-1.5 rounded-lg text-xs" />
-    <input type="text" placeholder="Fórmula (ej. impressions * tarifa / 1000)" value="${exprDefault}" class="formula-expr flex-1 px-2 py-1.5 rounded-lg text-xs" />
+    <input type="text" placeholder="Fórmula (ej. impressions * venta / 1000)" value="${exprDefault}" class="formula-expr flex-1 px-2 py-1.5 rounded-lg text-xs" />
     <button type="button" class="formula-remove text-xs text-[var(--text-soft)] px-2">✕</button>
   `;
   fila.querySelector(".formula-remove").addEventListener("click", () => fila.remove());
   contenedor.appendChild(fila);
 }
 document.getElementById("addFormulaBtn").addEventListener("click", () => agregarFilaFormula());
-agregarFilaFormula("Spend", "impressions * tarifa / 1000");
-agregarFilaFormula("CP Store Visit", "(impressions * tarifa / 1000) / visits");
+agregarFilaFormula("Spend", "impressions * venta / 1000");
+agregarFilaFormula("CP Store Visit", "(impressions * venta / 1000) / visits");
 
 function leerFormulas() {
   return Array.from(document.querySelectorAll(".formula-row")).map(fila => ({
@@ -443,122 +407,186 @@ function leerFormulas() {
   })).filter(f => f.label && f.expr);
 }
 
-/* =========================================================================
- * Lectura del panel + generación del reporte
- * ========================================================================= */
+let idsSeleccionados = [];
+let debounceTimer = null;
+
+function sourcesActuales() {
+  return Array.from(document.querySelectorAll(".cfgSource:checked")).map(el => el.value);
+}
+
+function pintarChipsId() {
+  const box = document.getElementById("idChipsBox");
+  const input = document.getElementById("cfgIdBuscar");
+  box.querySelectorAll(".id-chip").forEach(el => el.remove());
+  idsSeleccionados.forEach(id => {
+    const chip = document.createElement("span");
+    chip.className = "id-chip inline-flex items-center gap-1 bg-[#E8F0FE] text-[var(--blue)] text-xs font-medium px-2 py-1 rounded-full";
+    chip.innerHTML = `${id} <button type="button" class="ml-0.5 text-[var(--blue)]">✕</button>`;
+    chip.querySelector("button").addEventListener("click", () => {
+      idsSeleccionados = idsSeleccionados.filter(x => x !== id);
+      pintarChipsId();
+    });
+    box.insertBefore(chip, input);
+  });
+}
+
+async function buscarIdsEnVivo(query) {
+  const contenedor = document.getElementById("idSuggestions");
+  if (!query) { contenedor.classList.add("hidden"); return; }
+  try {
+    const res = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "autocomplete_campaign_ids", query, sources: sourcesActuales() }),
+    });
+    const data = await res.json();
+    const ids = (data.ids || []).filter(id => !idsSeleccionados.includes(id));
+    if (ids.length === 0) { contenedor.classList.add("hidden"); return; }
+    contenedor.innerHTML = ids.map(id => `<div class="suggestion-item px-3 py-2 text-sm cursor-pointer hover:bg-[#F5F5F7]" data-id="${id}">${id}</div>`).join("");
+    contenedor.classList.remove("hidden");
+    contenedor.querySelectorAll(".suggestion-item").forEach(el => {
+      el.addEventListener("click", () => {
+        const id = el.dataset.id;
+        if (!idsSeleccionados.includes(id)) idsSeleccionados.push(id);
+        document.getElementById("cfgIdBuscar").value = "";
+        contenedor.classList.add("hidden");
+        pintarChipsId();
+      });
+    });
+  } catch (e) {
+    contenedor.classList.add("hidden");
+  }
+}
+
+document.getElementById("cfgIdBuscar").addEventListener("input", (e) => {
+  clearTimeout(debounceTimer);
+  const valor = e.target.value.trim();
+  debounceTimer = setTimeout(() => buscarIdsEnVivo(valor), 300);
+});
+document.addEventListener("click", (e) => {
+  const box = document.getElementById("idSuggestions");
+  if (!e.target.closest("#idChipsBox") && !e.target.closest("#idSuggestions")) box.classList.add("hidden");
+});
+
 function formatearFechaLarga(iso) {
   const [y, m, d] = iso.split("-");
   return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
 }
 
-function generarReporte() {
+async function generarReporte() {
   const errorBanner = document.getElementById("errorBanner");
   errorBanner.classList.add("hidden");
 
   const titulo = document.getElementById("cfgTitulo").value.trim();
-  const valorBusqueda = document.getElementById("cfgValorBusqueda").value.trim();
-  const tipoFiltro = document.getElementById("cfgTipoFiltro").value;
-  const sources = Array.from(document.querySelectorAll(".cfgSource:checked")).map(el => el.value);
+  const odv = document.getElementById("cfgOdv").value.trim();
+  const sources = sourcesActuales();
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
 
-  if (!valorBusqueda) { errorBanner.textContent = "Captura el valor a buscar (ODV o ID)."; errorBanner.classList.remove("hidden"); return; }
+  if (!odv && idsSeleccionados.length === 0) { errorBanner.textContent = "Captura un ODV o selecciona al menos un ID de campaña."; errorBanner.classList.remove("hidden"); return; }
   if (sources.length === 0) { errorBanner.textContent = "Marca al menos un source."; errorBanner.classList.remove("hidden"); return; }
 
-  // Header
-  document.getElementById("reportTitle").textContent = titulo || "Reporte de campaña";
-  document.getElementById("platformLabel").textContent = `Buscando por ${tipoFiltro === "id" ? "ID de campaña" : "ODV"}: ${valorBusqueda}`;
-  document.getElementById("reportDateRange").textContent =
-    `${formatearFechaLarga(document.getElementById("startDate").value)} — ${formatearFechaLarga(document.getElementById("endDate").value)} (fijo, no editable por el cliente)`;
+  const refreshBtn = document.getElementById("refreshBtn");
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Consultando Supabase…";
 
-  // Títulos de sección personalizados
-  document.getElementById("hKpi").textContent = document.getElementById("tituloKpi").value || "KPI Cards";
-  document.getElementById("hPerformance").textContent = document.getElementById("tituloPerformance").value || "Performance";
-  document.getElementById("hGeoLift").textContent = document.getElementById("tituloGeoLift").value || "Geo Lift";
-  document.getElementById("hGeofence").textContent = document.getElementById("tituloGeofence").value || "Geofence Performance";
-  document.getElementById("hCreativosNombre").textContent = document.getElementById("tituloCreativosNombre").value || "Creativos · por nombre";
-  document.getElementById("hCreativosMedida").textContent = document.getElementById("tituloCreativosMedida").value || "Creativos · por medida";
-  document.getElementById("hTrend").textContent = document.getElementById("tituloTrend").value || "Trend Analysis";
-  document.getElementById("hDetailed").textContent = document.getElementById("tituloDetailed").value || "Detailed Metrics";
-  document.getElementById("hAudiencia").textContent = document.getElementById("tituloAudiencia").value || "Audiencia detallada";
+  try {
+    const res = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ odv, campaignIds: idsSeleccionados, startDate, endDate, sources }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Error ${res.status} al consultar la función.`);
 
-  // Metas
-  const metas = {
-    impressions: parseFloat(document.getElementById("metaImpressions").value) || null,
-    clicks: parseFloat(document.getElementById("metaClicks").value) || null,
-    visits: parseFloat(document.getElementById("metaVisits").value) || null,
-    tarifa: parseFloat(document.getElementById("tarifaVenta").value) || 0,
-  };
+    document.getElementById("reportTitle").textContent = titulo || "Reporte de campaña";
+    document.getElementById("platformLabel").textContent = idsSeleccionados.length > 0
+      ? `ID(s) de campaña: ${idsSeleccionados.join(", ")}`
+      : `ODV: ${odv}`;
+    document.getElementById("reportDateRange").textContent =
+      `${formatearFechaLarga(startDate)} — ${formatearFechaLarga(endDate)} (fijo, no editable por el cliente)`;
 
-  const variables = {
-    impressions: totalesMock.impressions,
-    clicks: totalesMock.clicks,
-    visits: totalesMock.visits,
-    ctr: totalesMock.ctr,
-    tarifa: metas.tarifa,
-  };
+    document.getElementById("hKpi").textContent = document.getElementById("tituloKpi").value || "KPI Cards";
+    document.getElementById("hPerformance").textContent = document.getElementById("tituloPerformance").value || "Performance";
+    document.getElementById("hGeoLift").textContent = document.getElementById("tituloGeoLift").value || "Geo Lift";
+    document.getElementById("hGeofence").textContent = document.getElementById("tituloGeofence").value || "Geofence Performance";
+    document.getElementById("hCreativosNombre").textContent = document.getElementById("tituloCreativosNombre").value || "Creativos · por nombre";
+    document.getElementById("hCreativosMedida").textContent = document.getElementById("tituloCreativosMedida").value || "Creativos · por medida";
+    document.getElementById("hTrend").textContent = document.getElementById("tituloTrend").value || "Trend Analysis";
+    document.getElementById("hDetailed").textContent = document.getElementById("tituloDetailed").value || "Detailed Metrics";
+    document.getElementById("hAudiencia").textContent = document.getElementById("tituloAudiencia").value || "Audiencia detallada";
 
-  const formulas = leerFormulas();
-  const calculadas = {};
-  formulas.forEach(f => { try { calculadas[f.label] = evaluarFormula(f.expr, variables); } catch (e) { calculadas[f.label] = null; } });
+    const metas = {
+      impressions: parseFloat(document.getElementById("metaImpressions").value) || null,
+      clicks: parseFloat(document.getElementById("metaClicks").value) || null,
+      visits: parseFloat(document.getElementById("metaVisits").value) || null,
+      venta: parseFloat(document.getElementById("venta").value) || 0,
+    };
+    const variables = { impressions: data.totales.impressions, clicks: data.totales.clicks, visits: data.totales.visits, ctr: data.ctr_global, venta: metas.venta };
+    const formulas = leerFormulas();
+    const calculadas = {};
+    formulas.forEach(f => { try { calculadas[f.label] = evaluarFormula(f.expr, variables); } catch (e) { calculadas[f.label] = null; } });
 
-  pintarKpis(metas);
-  pintarPerformance(calculadas);
-  pintarChartResultados();
-  pintarDonasAudiencia();
-  pintarTablas();
-  pintarGeoLift();
+    pintarKpis(data.totales, metas);
+    pintarPerformance(data.ctr_global, calculadas);
+    pintarChartResultados(data.diario);
+    pintarDonasAudiencia(data.audiencia);
+    pintarGeofence(data.geofence);
+    pintarCreativos(data.creativos_nombre, data.creativos_medida);
+    pintarTopSites(data.top_sites);
+    pintarPantallas(data.pantallas);
+    pintarGeoLift(data.geo_lift);
 
-  document.getElementById("clientView").classList.remove("hidden");
+    document.getElementById("clientView").classList.remove("hidden");
+  } catch (err) {
+    errorBanner.textContent = err.message || "No se pudo generar el reporte.";
+    errorBanner.classList.remove("hidden");
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "Generar reporte";
+  }
 }
 
-/* --- KPI Cards con barra de progreso vs meta --- */
-function pintarKpis(metas) {
+function pintarKpis(totales, metas) {
   const metaAlcance = metas.impressions ? metas.impressions / 2 : null;
-  const alcance = Math.round(totalesMock.impressions / 2);
-
+  const alcance = Math.round(totales.impressions / 2);
   const kpis = [
-    { label: "Impresiones", valor: totalesMock.impressions, meta: metas.impressions },
+    { label: "Impresiones", valor: totales.impressions, meta: metas.impressions },
     { label: "Alcance", valor: alcance, meta: metaAlcance },
-    { label: "Clics", valor: totalesMock.clicks, meta: metas.clicks },
-    { label: "Visitas", valor: totalesMock.visits, meta: metas.visits },
+    { label: "Clics", valor: totales.clicks, meta: metas.clicks },
+    { label: "Visitas", valor: totales.visits, meta: metas.visits },
   ];
-
   document.getElementById("kpiCards").innerHTML = kpis.map(k => {
     if (!k.meta) {
-      return `
-        <div class="chip p-4 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-1">${k.label}</p>
-          <p class="text-2xl font-bold gradient-text">${fmtNumero.format(k.valor)}</p>
-          <p class="text-[11px] text-[var(--text-soft)] mt-1">sin meta capturada</p>
-        </div>`;
-    }
-    const pct = (k.valor / k.meta) * 100;
-    return `
-      <div class="chip p-4 rounded-2xl">
+      return `<div class="chip p-4 rounded-2xl">
         <p class="text-xs text-[var(--text-soft)] mb-1">${k.label}</p>
         <p class="text-2xl font-bold gradient-text">${fmtNumero.format(k.valor)}</p>
-        <p class="text-[11px] text-[var(--text-soft)] mb-2">meta ${fmtNumero.format(Math.round(k.meta))} · ${pct.toFixed(0)}%</p>
-        <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, pct)}%"></div></div>
-      </div>`;
+        <p class="text-[11px] text-[var(--text-soft)] mt-1">sin meta capturada</p></div>`;
+    }
+    const pct = (k.valor / k.meta) * 100;
+    return `<div class="chip p-4 rounded-2xl">
+      <p class="text-xs text-[var(--text-soft)] mb-1">${k.label}</p>
+      <p class="text-2xl font-bold gradient-text">${fmtNumero.format(k.valor)}</p>
+      <p class="text-[11px] text-[var(--text-soft)] mb-2">meta ${fmtNumero.format(Math.round(k.meta))} · ${pct.toFixed(0)}%</p>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, pct)}%"></div></div></div>`;
   }).join("");
 }
 
-/* --- Performance (a partir de las métricas calculadas por fórmula) --- */
-function pintarPerformance(calculadas) {
-  document.getElementById("pfCtr").textContent = `${totalesMock.ctr.toFixed(2)}%`;
+function pintarPerformance(ctrGlobal, calculadas) {
+  document.getElementById("pfCtr").textContent = `${ctrGlobal.toFixed(2)}%`;
   const spend = calculadas["Spend"];
   const cpsv = calculadas["CP Store Visit"];
   document.getElementById("pfSpend").textContent = spend != null ? fmtMoneda.format(spend) : "—";
   document.getElementById("pfCpsv").textContent = cpsv != null ? fmtMoneda.format(cpsv) : "—";
 }
 
-/* --- Chart de resultados: un solo eje normalizado, líneas + puntos --- */
 let chartResultadosInstance = null;
-function pintarChartResultados() {
+function pintarChartResultados(diario) {
   const metricas = {
-    Impresiones: serieDiaria.map(d => d.impressions),
-    Clics: serieDiaria.map(d => d.clicks),
-    Visitas: serieDiaria.map(d => d.visits),
-    CTR: serieDiaria.map(d => d.ctr),
+    Impresiones: diario.map(d => d.impressions),
+    Clics: diario.map(d => d.clicks),
+    Visitas: diario.map(d => d.visits),
+    CTR: diario.map(d => d.ctr),
   };
   function normalizar(arr) {
     const max = Math.max(...arr);
@@ -567,7 +595,7 @@ function pintarChartResultados() {
   const fmtSegunMetrica = (nombre, valor) => nombre === "CTR" ? `${valor.toFixed(2)}%` : fmtNumero.format(Math.round(valor));
   const colores = ["#007AFF", "#7A3FE0", "#C93FC0", "#FF2D55"];
 
-  if (chartResultadosInstance) { chartResultadosInstance.destroy(); }
+  if (chartResultadosInstance) chartResultadosInstance.destroy();
   chartResultadosInstance = new ApexCharts(document.querySelector("#chartResultados"), {
     chart: { type: "line", height: 280, toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
     theme: { mode: "light" },
@@ -575,7 +603,7 @@ function pintarChartResultados() {
     stroke: { curve: "smooth", width: 2.5 },
     markers: { size: 4, strokeWidth: 0, hover: { size: 6 } },
     colors: colores,
-    xaxis: { type: "category", categories: serieDiaria.map(d => d.fecha), labels: { style: { colors: "#86868B", fontSize: "9px" }, rotate: -45 } },
+    xaxis: { type: "category", categories: diario.map(d => d.fecha), labels: { style: { colors: "#86868B", fontSize: "9px" }, rotate: -45 } },
     yaxis: { show: false, min: 0, max: 105 },
     grid: { borderColor: "rgba(0,0,0,0.06)", strokeDashArray: 4 },
     dataLabels: { enabled: false },
@@ -586,13 +614,10 @@ function pintarChartResultados() {
           const real = metricas[nombre][dataPointIndex];
           return `<div style="display:flex;justify-content:space-between;gap:14px;padding:2px 0;">
             <span style="color:${colores[i]}">● ${nombre}</span>
-            <span style="color:#1D1D1F;font-weight:600">${fmtSegunMetrica(nombre, real)}</span>
-          </div>`;
+            <span style="color:#1D1D1F;font-weight:600">${fmtSegunMetrica(nombre, real)}</span></div>`;
         }).join("");
         return `<div style="background:#FFFFFF;border:1px solid rgba(0,0,0,0.08);border-radius:10px;padding:8px 10px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-          <div style="color:#86868B;margin-bottom:4px;">${serieDiaria[dataPointIndex].fecha}</div>
-          ${filas}
-        </div>`;
+          <div style="color:#86868B;margin-bottom:4px;">${diario[dataPointIndex].fecha}</div>${filas}</div>`;
       },
     },
     legend: { position: "top", horizontalAlign: "left", fontSize: "11px", labels: { colors: "#86868B" } },
@@ -600,15 +625,19 @@ function pintarChartResultados() {
   chartResultadosInstance.render();
 }
 
-/* --- Donas de audiencia --- */
 const donutInstances = {};
 function crearDonaConLeyenda(idDona, idLeyenda, items) {
   const colores = ["#007AFF", "#4A5FD9", "#944FC2", "#DB3FA0", "#FF2D55"];
-  if (donutInstances[idDona]) { donutInstances[idDona].destroy(); }
+  if (donutInstances[idDona]) donutInstances[idDona].destroy();
+  if (!items || items.length === 0) {
+    document.querySelector(idDona).innerHTML = "";
+    document.querySelector(idLeyenda).innerHTML = `<p class="text-xs text-[var(--text-soft)]">Sin datos (habilita el source correspondiente)</p>`;
+    return;
+  }
   const chart = new ApexCharts(document.querySelector(idDona), {
     chart: { type: "donut", height: 110, background: "transparent" },
-    series: items.map(i => i.valor),
-    labels: items.map(i => i.label),
+    series: items.map(i => i.porcentaje),
+    labels: items.map(i => i.nombre),
     colors: colores,
     legend: { show: false },
     dataLabels: { enabled: false },
@@ -616,102 +645,81 @@ function crearDonaConLeyenda(idDona, idLeyenda, items) {
   });
   chart.render();
   donutInstances[idDona] = chart;
-
   document.querySelector(idLeyenda).innerHTML = items.map((item, i) => `
     <div class="legend-row">
-      <span class="legend-dot" style="background:${colores[i]}"></span>
-      <span class="legend-label">${item.label}</span>
-      <span class="legend-track"><span class="legend-fill" style="width:${item.valor}%; background:${colores[i]}"></span></span>
-      <span class="legend-pct">${item.valor}%</span>
-    </div>
-  `).join("");
+      <span class="legend-dot" style="background:${colores[i % colores.length]}"></span>
+      <span class="legend-label">${item.nombre}</span>
+      <span class="legend-track"><span class="legend-fill" style="width:${item.porcentaje}%; background:${colores[i % colores.length]}"></span></span>
+      <span class="legend-pct">${item.porcentaje}%</span>
+    </div>`).join("");
 }
-function pintarDonasAudiencia() {
-  crearDonaConLeyenda("#donutGeneroMini", "#legendGenero", [{ label: "Female", valor: 48.2 }, { label: "Male", valor: 51.8 }]);
-  crearDonaConLeyenda("#donutEdad", "#legendEdad", [
-    { label: "Gen Z", valor: 30.2 }, { label: "Millenials", valor: 41.7 }, { label: "Gen X", valor: 21.1 }, { label: "Boomers", valor: 7.0 },
-  ]);
-  crearDonaConLeyenda("#donutNSE", "#legendNSE", [{ label: "AB", valor: 41.3 }, { label: "C+", valor: 29.9 }, { label: "C", valor: 28.8 }]);
-  crearDonaConLeyenda("#donutMarital", "#legendMarital", [{ label: "Soltero", valor: 54 }, { label: "Casado", valor: 38 }, { label: "Otro", valor: 8 }]);
+function pintarDonasAudiencia(audiencia) {
+  crearDonaConLeyenda("#donutGeneroMini", "#legendGenero", audiencia?.gender);
+  crearDonaConLeyenda("#donutEdad", "#legendEdad", audiencia?.age);
+  crearDonaConLeyenda("#donutNSE", "#legendNSE", audiencia?.income);
 }
 
-/* --- Tablas: sites, creativos, geofence --- */
-function pintarTablas() {
-  const sites = [
-    { site: "eluniversal.com.mx", impressions: 412300, clicks: 620, visits: 5100 },
-    { site: "milenio.com", impressions: 388900, clicks: 545, visits: 4720 },
-    { site: "excelsior.com.mx", impressions: 301200, clicks: 480, visits: 3990 },
-    { site: "as.com/mx", impressions: 275600, clicks: 410, visits: 3540 },
-    { site: "espn.com.mx", impressions: 249800, clicks: 388, visits: 3120 },
-    { site: "clima.com", impressions: 198400, clicks: 290, visits: 2680 },
-    { site: "weather.com", impressions: 176200, clicks: 255, visits: 2210 },
-    { site: "yahoo.com", impressions: 150300, clicks: 198, visits: 1890 },
-    { site: "aol.com", impressions: 132900, clicks: 172, visits: 1540 },
-    { site: "outlook.com", impressions: 118700, clicks: 149, visits: 1290 },
-  ].sort((a, b) => b.visits - a.visits);
-  document.getElementById("tablaSites").innerHTML = sites.map(s => `
-    <tr><td class="py-2 font-medium">${s.site}</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.impressions)}</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.clicks)}</td>
-    <td class="py-2 text-right tabular-nums">${((s.clicks / s.impressions) * 100).toFixed(2)}%</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.visits)}</td></tr>
-  `).join("");
+function pintarGeofence(rows) {
+  document.getElementById("tablaGeofence").innerHTML = (rows || []).map(g => `
+    <tr><td class="py-2 font-medium">${g.nombre}</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.impressions)}</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.clicks)}</td>
+    <td class="py-2 text-right tabular-nums">${g.ctr.toFixed(2)}%</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.visits)}</td></tr>
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_geofence)</td></tr>`;
+}
 
-  const creativosNombre = [
-    { nombre: "Caguamón_2x75_JUGADOR", impressions: 494517, clicks: 787 },
-    { nombre: "Cooler_320x50_JUGADOR", impressions: 496321, clicks: 782 },
-    { nombre: "100469_AC_Display_Banner", impressions: 502986, clicks: 776 },
-    { nombre: "Cuartito_20x150", impressions: 225709, clicks: 370 },
-    { nombre: "PEPSI_Display", impressions: 200007, clicks: 344 },
-  ].sort((a, b) => b.impressions - a.impressions);
-  document.getElementById("tablaCreativosNombre").innerHTML = creativosNombre.map(c => `
+function pintarPantallas(rows) {
+  const sec = document.getElementById("secPantallas");
+  if (!rows || rows.length === 0) { sec.classList.add("hidden"); return; }
+  sec.classList.remove("hidden");
+  document.getElementById("tablaPantallas").innerHTML = rows.map(p => `
+    <tr><td class="py-2 font-medium">${p.nombre}</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(p.impressions)}</td></tr>
+  `).join("");
+}
+
+function pintarCreativos(porNombre, porMedida) {
+  document.getElementById("tablaCreativosNombre").innerHTML = (porNombre || []).map(c => `
     <tr><td class="py-2 font-medium">${c.nombre}</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(c.impressions)}</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(c.clicks)}</td>
-    <td class="py-2 text-right tabular-nums">${((c.clicks / c.impressions) * 100).toFixed(2)}%</td></tr>
-  `).join("");
-
-  const creativosMedida = [
-    { medida: "320x50", impressions: 1493824, clicks: 2345 },
-    { medida: "300x250", impressions: 987650, clicks: 1560 },
-    { medida: "160x600", impressions: 645300, clicks: 890 },
-    { medida: "728x90", impressions: 420100, clicks: 610 },
-    { medida: "20x150", impressions: 225709, clicks: 370 },
-  ].sort((a, b) => b.impressions - a.impressions);
-  document.getElementById("tablaCreativosMedida").innerHTML = creativosMedida.map(c => `
-    <tr><td class="py-2 font-medium">${c.medida}</td>
+    <td class="py-2 text-right tabular-nums">${c.ctr.toFixed(2)}%</td></tr>
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="4">Sin datos</td></tr>`;
+  document.getElementById("tablaCreativosMedida").innerHTML = (porMedida || []).map(c => `
+    <tr><td class="py-2 font-medium">${c.nombre}</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(c.impressions)}</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(c.clicks)}</td>
-    <td class="py-2 text-right tabular-nums">${((c.clicks / c.impressions) * 100).toFixed(2)}%</td></tr>
-  `).join("");
-
-  const geofences = [
-    { geo: "300145874SIX", impressions: 36358, clicks: 64, visits: 4155 },
-    { geo: "300880779SIX", impressions: 23590, clicks: 50, visits: 3234 },
-    { geo: "300145820SIX", impressions: 24438, clicks: 57, visits: 2919 },
-    { geo: "300145730SIX", impressions: 22045, clicks: 58, visits: 2737 },
-    { geo: "300145640SIX", impressions: 17101, clicks: 35, visits: 2466 },
-  ].sort((a, b) => b.visits - a.visits);
-  document.getElementById("tablaGeofence").innerHTML = geofences.map(g => `
-    <tr><td class="py-2 font-medium">${g.geo}</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.impressions)}</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.clicks)}</td>
-    <td class="py-2 text-right tabular-nums">${((g.clicks / g.impressions) * 100).toFixed(2)}%</td>
-    <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.visits)}</td></tr>
-  `).join("");
+    <td class="py-2 text-right tabular-nums">${c.ctr.toFixed(2)}%</td></tr>
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="4">Sin datos</td></tr>`;
 }
 
-/* --- Geo Lift chart --- */
+function pintarTopSites(rows) {
+  document.getElementById("tablaSites").innerHTML = (rows || []).map(s => `
+    <tr><td class="py-2 font-medium">${s.nombre}</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.impressions)}</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.clicks)}</td>
+    <td class="py-2 text-right tabular-nums">${s.ctr.toFixed(2)}%</td>
+    <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.visits)}</td></tr>
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_delivery)</td></tr>`;
+}
+
 let geoLiftInstance = null;
-function pintarGeoLift() {
-  const converters = serieDiaria.map(d => Math.round(d.visits * 0.85 + Math.random() * 200));
-  if (geoLiftInstance) { geoLiftInstance.destroy(); }
+function pintarGeoLift(geoLift) {
+  const seccion = document.getElementById("hGeoLift").closest("section");
+  if (!geoLift) { seccion.classList.add("hidden"); return; }
+  seccion.classList.remove("hidden");
+  seccion.querySelectorAll(".chip p.text-xl")[0].textContent = fmtNumero.format(geoLift.organic_visits);
+  seccion.querySelectorAll(".chip p.text-xl")[1].textContent = fmtNumero.format(geoLift.campaign_visits);
+  seccion.querySelectorAll(".chip p.text-xl")[2].textContent = `${geoLift.inc_visits_pct.toFixed(2)}%`;
+
+  if (geoLiftInstance) geoLiftInstance.destroy();
   geoLiftInstance = new ApexCharts(document.querySelector("#chartGeoLift"), {
     chart: { type: "line", height: 200, toolbar: { show: false }, background: "transparent" },
-    series: [{ name: "User Converters", data: converters }],
+    series: [{ name: "User Converters", data: geoLift.serie_diaria.map(d => d.user_converters) }],
     stroke: { curve: "smooth", width: 3 },
     colors: ["#B34FD1"],
-    xaxis: { type: "category", categories: serieDiaria.map(d => d.fecha), labels: { style: { colors: "#86868B", fontSize: "9px" }, rotate: -45 } },
+    xaxis: { type: "category", categories: geoLift.serie_diaria.map(d => d.fecha), labels: { style: { colors: "#86868B", fontSize: "9px" }, rotate: -45 } },
     grid: { borderColor: "rgba(0,0,0,0.06)", strokeDashArray: 4 },
     dataLabels: { enabled: false },
     tooltip: { theme: "light" },
@@ -719,7 +727,6 @@ function pintarGeoLift() {
   geoLiftInstance.render();
 }
 
-/* --- Eventos --- */
 document.getElementById("refreshBtn").addEventListener("click", generarReporte);
 document.getElementById("toggleDevBtn").addEventListener("click", () => document.body.classList.toggle("modo-cliente"));
 </script>
