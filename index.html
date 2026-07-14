@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Panel de Reporte — Heineken Six</title>
+<title>Panel de Reporte</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
@@ -66,23 +66,24 @@
 
   <!-- =====================================================================
        PANEL DEL DESARROLLADOR — configuración inicial del reporte.
+       Sin valores de cliente hardcodeados: sirve para cualquier campaña.
   ====================================================================== -->
   <section id="devPanel" class="panel p-6 rounded-2xl mb-8">
     <div class="section-title"><span class="dot"></span> Panel de configuración <span class="line"></span></div>
 
     <div class="mb-4">
       <label class="field-label">Título del reporte</label>
-      <input id="cfgTitulo" type="text" value="Heineken Six — Junio" class="w-full md:w-1/2 px-3 py-2 rounded-lg text-sm" />
+      <input id="cfgTitulo" type="text" placeholder="ej. Heineken Six — Junio" class="w-full md:w-1/2 px-3 py-2 rounded-lg text-sm" />
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <div>
         <label class="field-label">Fecha inicio</label>
-        <input id="startDate" type="date" value="2026-06-01" class="w-full px-3 py-2 rounded-lg text-sm" />
+        <input id="startDate" type="date" class="w-full px-3 py-2 rounded-lg text-sm" />
       </div>
       <div>
         <label class="field-label">Fecha fin</label>
-        <input id="endDate" type="date" value="2026-06-30" class="w-full px-3 py-2 rounded-lg text-sm" />
+        <input id="endDate" type="date" class="w-full px-3 py-2 rounded-lg text-sm" />
       </div>
       <div class="md:col-span-2 flex items-end">
         <p class="text-[11px] text-[var(--text-soft)] chip px-3 py-2 rounded-lg">
@@ -97,7 +98,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="field-label">ODV (texto libre, contiene)</label>
-          <input id="cfgOdv" type="text" placeholder="ej. SIX-JUN26" value="SIX-JUN26" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="cfgOdv" type="text" placeholder="ej. 71-26" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div class="relative">
           <label class="field-label">ID de campaña (busca en vivo, puedes elegir varios — se combinan con OR)</label>
@@ -112,25 +113,26 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Simpli.fi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_delivery" checked> Delivery</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_geofence" checked> Geofence</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_delivery"> Delivery</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_geofence"> Geofence</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_device"> Device</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_contex"> Contexto</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_cross_conversion"> Cross Conversion</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_video" checked> Video (creativos)</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_video"> Video (creativos)</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simpli_geo_video"> Geo Video</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="simplifi_conversion_lift" checked> Conversion Lift (Geo Lift)</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_conversion_lift"> Conversion Lift (Geo Lift)</label>
+          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="simplifi_audience"> Audience (composición demográfica)</label>
         </div>
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Eskimi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_performance" checked> Performance</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_creatives" checked> Creativos</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_gender_performance" checked> Género</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="eskimi_age_performance" checked> Edad</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_performance"> Performance</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_creatives"> Creativos</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_gender_performance"> Género</label>
+          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="eskimi_age_performance"> Edad</label>
         </div>
         <div class="chip p-3 rounded-xl">
           <p class="text-xs font-semibold mb-2">Quantcast <span class="text-[var(--text-soft)] font-normal">(solo ODV)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_report"> Report (edad/género/ingreso)</label>
+          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_report"> Report</label>
           <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_regions"> Regiones</label>
           <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="quantcast_creatives"> Creativos</label>
         </div>
@@ -141,28 +143,28 @@
       </div>
     </div>
 
-    <details class="text-sm mb-2" open>
+    <details class="text-sm mb-2">
       <summary class="cursor-pointer text-[var(--text-soft)] font-medium">Metas de campaña</summary>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-3">
         <div>
           <label class="field-label">Meta Impresiones</label>
-          <input id="metaImpressions" type="number" value="5244210" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="metaImpressions" type="number" placeholder="ej. 5000000" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div>
           <label class="field-label">Meta Clics</label>
-          <input id="metaClicks" type="number" value="8500" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="metaClicks" type="number" placeholder="ej. 8000" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div>
           <label class="field-label">Meta Visitas</label>
-          <input id="metaVisits" type="number" value="63000" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="metaVisits" type="number" placeholder="ej. 60000" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div>
           <label class="field-label">Tipo de venta</label>
-          <input id="tipoVenta" type="text" placeholder="ej. CPM, CPC, Flat" value="CPM" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="tipoVenta" type="text" placeholder="ej. CPM, CPC, Flat" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
         <div>
           <label class="field-label">Valor de venta</label>
-          <input id="venta" type="number" value="85" class="w-full px-3 py-2 rounded-lg text-sm" />
+          <input id="venta" type="number" placeholder="ej. 85" class="w-full px-3 py-2 rounded-lg text-sm" />
         </div>
       </div>
       <p class="text-xs text-[var(--text-soft)] mt-3 mb-2">
@@ -306,31 +308,11 @@
       </div>
     </section>
 
-    <section class="panel p-6 rounded-2xl mb-6">
+    <!-- Audiencia: dinámica, se pinta segun las categorias reales que regrese simplifi_audience
+         (Age, Gender, Income, Marital Status, Education, Race - lo que venga) -->
+    <section class="panel p-6 rounded-2xl mb-10">
       <div class="section-title"><span class="dot"></span> <span id="hAudiencia">Audiencia detallada</span> <span class="line"></span></div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">Género <span class="text-[10px] text-[var(--text-soft)]">(Eskimi / Quantcast)</span></p>
-          <div class="flex items-center gap-4">
-            <div id="donutGeneroMini" style="width:100px;flex-shrink:0;"></div>
-            <div class="flex-1" id="legendGenero"></div>
-          </div>
-        </div>
-        <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">Edad <span class="text-[10px] text-[var(--text-soft)]">(Eskimi / Quantcast)</span></p>
-          <div class="flex items-center gap-4">
-            <div id="donutEdad" style="width:100px;flex-shrink:0;"></div>
-            <div class="flex-1" id="legendEdad"></div>
-          </div>
-        </div>
-        <div class="chip p-5 rounded-2xl">
-          <p class="text-xs text-[var(--text-soft)] mb-3">NSE / Ingreso <span class="text-[10px] text-[var(--text-soft)]">(solo Quantcast)</span></p>
-          <div class="flex items-center gap-4">
-            <div id="donutNSE" style="width:100px;flex-shrink:0;"></div>
-            <div class="flex-1" id="legendNSE"></div>
-          </div>
-        </div>
-      </div>
+      <div id="audienciaGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </section>
 
     <section id="secPantallas" class="panel p-6 rounded-2xl mb-10 overflow-x-auto hidden">
@@ -351,6 +333,16 @@ const EDGE_FUNCTION_URL = "https://ldqbqkimfhtwbojfysqo.supabase.co/functions/v1
 
 const fmtNumero = new Intl.NumberFormat("es-MX");
 const fmtMoneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
+
+// Fechas por default: ultimos 30 dias, no atado a ninguna campana especifica
+const startInput = document.getElementById("startDate");
+const endInput = document.getElementById("endDate");
+function toISODate(d) { return d.toISOString().split("T")[0]; }
+const hoy = new Date();
+const hace30 = new Date();
+hace30.setDate(hoy.getDate() - 30);
+startInput.value = toISODate(hace30);
+endInput.value = toISODate(hoy);
 
 function evaluarFormula(expresion, variables) {
   const tokens = expresion.match(/([A-Za-z_][A-Za-z0-9_]*)|(\d+\.?\d*)|([+\-*/()])/g);
@@ -530,7 +522,7 @@ async function generarReporte() {
     pintarKpis(data.totales, metas);
     pintarPerformance(data.ctr_global, calculadas);
     pintarChartResultados(data.diario);
-    pintarDonasAudiencia(data.audiencia);
+    pintarAudiencia(data.audiencia);
     pintarGeofence(data.geofence);
     pintarCreativos(data.creativos_nombre, data.creativos_medida);
     pintarTopSites(data.top_sites);
@@ -625,38 +617,56 @@ function pintarChartResultados(diario) {
   chartResultadosInstance.render();
 }
 
+// Audiencia dinamica: "audiencia" viene como { "Age": [...], "Gender": [...], ... }
+// Se pinta una tarjeta con dona+leyenda por cada categoria que realmente venga en la respuesta.
 const donutInstances = {};
-function crearDonaConLeyenda(idDona, idLeyenda, items) {
-  const colores = ["#007AFF", "#4A5FD9", "#944FC2", "#DB3FA0", "#FF2D55"];
-  if (donutInstances[idDona]) donutInstances[idDona].destroy();
-  if (!items || items.length === 0) {
-    document.querySelector(idDona).innerHTML = "";
-    document.querySelector(idLeyenda).innerHTML = `<p class="text-xs text-[var(--text-soft)]">Sin datos (habilita el source correspondiente)</p>`;
+function pintarAudiencia(audiencia) {
+  const grid = document.getElementById("audienciaGrid");
+  grid.innerHTML = "";
+  Object.values(donutInstances).forEach(chart => chart.destroy());
+  for (const key in donutInstances) delete donutInstances[key];
+
+  const categorias = Object.keys(audiencia || {});
+  if (categorias.length === 0) {
+    grid.innerHTML = `<p class="text-xs text-[var(--text-soft)] col-span-full">Sin datos (habilita simplifi_audience)</p>`;
     return;
   }
-  const chart = new ApexCharts(document.querySelector(idDona), {
-    chart: { type: "donut", height: 110, background: "transparent" },
-    series: items.map(i => i.porcentaje),
-    labels: items.map(i => i.nombre),
-    colors: colores,
-    legend: { show: false },
-    dataLabels: { enabled: false },
-    stroke: { width: 2, colors: ["#FFFFFF"] },
+
+  const colores = ["#007AFF", "#4A5FD9", "#944FC2", "#DB3FA0", "#FF2D55", "#FF9F0A"];
+  categorias.forEach((categoria, idx) => {
+    const items = audiencia[categoria];
+    const idDona = `donut-aud-${idx}`;
+    const idLeyenda = `legend-aud-${idx}`;
+    const card = document.createElement("div");
+    card.className = "chip p-5 rounded-2xl";
+    card.innerHTML = `
+      <p class="text-xs text-[var(--text-soft)] mb-3">${categoria}</p>
+      <div class="flex items-center gap-4">
+        <div id="${idDona}" style="width:100px;flex-shrink:0;"></div>
+        <div class="flex-1" id="${idLeyenda}"></div>
+      </div>`;
+    grid.appendChild(card);
+
+    const chart = new ApexCharts(document.getElementById(idDona), {
+      chart: { type: "donut", height: 110, background: "transparent" },
+      series: items.map(i => i.porcentaje),
+      labels: items.map(i => i.nombre),
+      colors: colores,
+      legend: { show: false },
+      dataLabels: { enabled: false },
+      stroke: { width: 2, colors: ["#FFFFFF"] },
+    });
+    chart.render();
+    donutInstances[idDona] = chart;
+
+    document.getElementById(idLeyenda).innerHTML = items.map((item, i) => `
+      <div class="legend-row">
+        <span class="legend-dot" style="background:${colores[i % colores.length]}"></span>
+        <span class="legend-label">${item.nombre}</span>
+        <span class="legend-track"><span class="legend-fill" style="width:${item.porcentaje}%; background:${colores[i % colores.length]}"></span></span>
+        <span class="legend-pct">${item.porcentaje}%</span>
+      </div>`).join("");
   });
-  chart.render();
-  donutInstances[idDona] = chart;
-  document.querySelector(idLeyenda).innerHTML = items.map((item, i) => `
-    <div class="legend-row">
-      <span class="legend-dot" style="background:${colores[i % colores.length]}"></span>
-      <span class="legend-label">${item.nombre}</span>
-      <span class="legend-track"><span class="legend-fill" style="width:${item.porcentaje}%; background:${colores[i % colores.length]}"></span></span>
-      <span class="legend-pct">${item.porcentaje}%</span>
-    </div>`).join("");
-}
-function pintarDonasAudiencia(audiencia) {
-  crearDonaConLeyenda("#donutGeneroMini", "#legendGenero", audiencia?.gender);
-  crearDonaConLeyenda("#donutEdad", "#legendEdad", audiencia?.age);
-  crearDonaConLeyenda("#donutNSE", "#legendNSE", audiencia?.income);
 }
 
 function pintarGeofence(rows) {
