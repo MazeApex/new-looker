@@ -58,6 +58,18 @@
   input:focus, select:focus{ outline:none; background:#fff; border-color:var(--blue); }
   .field-label{ font-size:11px; font-weight:500; color:var(--text-soft); margin-bottom:4px; display:block; }
   body.modo-cliente #devPanel{ display:none; }
+
+  /* Tabla de sources: cada fila = una tabla real, con su propio ODV/ID */
+  .tabla-sources td{ padding:6px 8px; vertical-align:top; }
+  .tabla-sources tr.grupo-header td{ padding-top:14px; padding-bottom:2px; }
+  .tabla-sources .grupo-label{ font-size:11px; font-weight:700; color:var(--text-soft); text-transform:uppercase; letter-spacing:0.04em; }
+  .row-odv, .row-id-input{ width:100%; padding:5px 8px; border-radius:8px; font-size:12px; }
+  .row-id-box{ position:relative; }
+  .row-id-chips{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:4px; }
+  .row-id-chip{ display:inline-flex; align-items:center; gap:3px; background:#E8F0FE; color:var(--blue); font-size:11px; font-weight:500; padding:1px 6px; border-radius:99px; }
+  .row-id-suggestions{ position:absolute; z-index:20; background:#fff; border:1px solid var(--border); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.08); max-height:160px; overflow-y:auto; width:100%; }
+  .row-id-suggestion-item{ padding:5px 8px; font-size:12px; cursor:pointer; }
+  .row-id-suggestion-item:hover{ background:#F5F5F7; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -65,8 +77,7 @@
 <div class="max-w-7xl mx-auto px-6 py-8">
 
   <!-- =====================================================================
-       PANEL DEL DESARROLLADOR — configuración inicial del reporte.
-       Sin valores de cliente hardcodeados: sirve para cualquier campaña.
+       PANEL DEL DESARROLLADOR
   ====================================================================== -->
   <section id="devPanel" class="panel p-6 rounded-2xl mb-8">
     <div class="section-title"><span class="dot"></span> Panel de configuración <span class="line"></span></div>
@@ -87,59 +98,26 @@
       </div>
       <div class="md:col-span-2 flex items-end">
         <p class="text-[11px] text-[var(--text-soft)] chip px-3 py-2 rounded-lg">
-          ⚠️ Una vez generado, el cliente ve <b>solo</b> este rango — no puede ampliarlo. Es un candado de interfaz; el candado "de verdad" llega con el login por cliente que dejamos pendiente.
+          ⚠️ Una vez generado, el cliente ve <b>solo</b> este rango — no puede ampliarlo. Candado de interfaz; el candado real llega con el login por cliente pendiente.
         </p>
       </div>
     </div>
 
+    <!-- Sources: CADA TABLA con su propio ODV / ID, sin filtro global -->
     <div class="mb-4">
-      <label class="field-label mb-2">Sources — todas las tablas reales (sin noisia, sin tablas de prueba)</label>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="field-label">ODV (texto libre, contiene)</label>
-          <input id="cfgOdv" type="text" placeholder="ej. 71-26" class="w-full px-3 py-2 rounded-lg text-sm" />
-        </div>
-        <div class="relative">
-          <label class="field-label">ID de campaña (busca en vivo, puedes elegir varios — se combinan con OR)</label>
-          <div id="idChipsBox" class="w-full min-h-[38px] px-2 py-1.5 rounded-lg text-sm bg-[#F5F5F7] flex flex-wrap gap-1.5 items-center">
-            <input id="cfgIdBuscar" type="text" placeholder="escribe para buscar..." class="flex-1 min-w-[100px] bg-transparent px-1 py-0.5 text-sm outline-none" />
-          </div>
-          <div id="idSuggestions" class="hidden absolute z-10 w-full mt-1 bg-white border border-[var(--border)] rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
-          <p class="text-[10px] text-[var(--text-soft)] mt-1">Solo busca en Simpli.fi/Eskimi (únicas con campaign_id). Si no seleccionas ningún ID, se usa el ODV.</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-        <div class="chip p-3 rounded-xl">
-          <p class="text-xs font-semibold mb-2">Simpli.fi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_delivery"> Delivery</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_geofence"> Geofence</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_device"> Device</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_contex"> Contexto</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_cross_conversion"> Cross Conversion</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_video"> Video (creativos)</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simpli_geo_video"> Geo Video</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="simplifi_conversion_lift"> Conversion Lift (Geo Lift)</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="simplifi_audience"> Audience (composición demográfica)</label>
-        </div>
-        <div class="chip p-3 rounded-xl">
-          <p class="text-xs font-semibold mb-2">Eskimi <span class="text-[var(--text-soft)] font-normal">(ODV + ID)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_performance"> Performance</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_creatives"> Creativos</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="eskimi_gender_performance"> Género</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="eskimi_age_performance"> Edad</label>
-        </div>
-        <div class="chip p-3 rounded-xl">
-          <p class="text-xs font-semibold mb-2">Quantcast <span class="text-[var(--text-soft)] font-normal">(solo ODV)</span></p>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_report"> Report</label>
-          <label class="flex items-center gap-1.5 mb-1"><input type="checkbox" class="cfgSource" value="quantcast_regions"> Regiones</label>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="quantcast_creatives"> Creativos</label>
-        </div>
-        <div class="chip p-3 rounded-xl">
-          <p class="text-xs font-semibold mb-2">Hivestack <span class="text-[var(--text-soft)] font-normal">(solo ODV)</span></p>
-          <label class="flex items-center gap-1.5"><input type="checkbox" class="cfgSource" value="hivestack_performance"> Performance (pantallas)</label>
-        </div>
+      <label class="field-label mb-2">Sources — cada tabla filtra con su propio ODV o ID (independientes entre sí)</label>
+      <div class="chip rounded-xl overflow-x-auto">
+        <table class="w-full tabla-sources text-sm">
+          <thead>
+            <tr class="text-left">
+              <th class="pb-1 px-2 pt-2">Usar</th>
+              <th class="pb-1 px-2 pt-2">Tabla</th>
+              <th class="pb-1 px-2 pt-2">ODV (contiene)</th>
+              <th class="pb-1 px-2 pt-2">ID de campaña</th>
+            </tr>
+          </thead>
+          <tbody id="tablaSourcesBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -308,8 +286,7 @@
       </div>
     </section>
 
-    <!-- Audiencia: dinámica, se pinta segun las categorias reales que regrese simplifi_audience
-         (Age, Gender, Income, Marital Status, Education, Race - lo que venga) -->
+    <!-- Audiencia: dinámica, se pinta segun las categorias reales que regrese simplifi_audience -->
     <section class="panel p-6 rounded-2xl mb-10">
       <div class="section-title"><span class="dot"></span> <span id="hAudiencia">Audiencia detallada</span> <span class="line"></span></div>
       <div id="audienciaGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
@@ -334,7 +311,120 @@ const EDGE_FUNCTION_URL = "https://ldqbqkimfhtwbojfysqo.supabase.co/functions/v1
 const fmtNumero = new Intl.NumberFormat("es-MX");
 const fmtMoneda = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
 
-// Fechas por default: ultimos 30 dias, no atado a ninguna campana especifica
+/* =========================================================================
+ * CATALOGO DE TABLAS — debe coincidir con TABLAS en la Edge Function.
+ * Cada tabla es su propia fila con su propio ODV/ID, sin filtro global.
+ * ========================================================================= */
+const CATALOGO_TABLAS = [
+  { key: "simplifi_delivery", label: "Delivery", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_geofence", label: "Geofence", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_device", label: "Device", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_contex", label: "Contexto", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_cross_conversion", label: "Cross Conversion", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_video", label: "Video (creativos)", grupo: "Simpli.fi", hasId: true },
+  { key: "simpli_geo_video", label: "Geo Video", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_conversion_lift", label: "Conversion Lift (Geo Lift)", grupo: "Simpli.fi", hasId: true },
+  { key: "simplifi_audience", label: "Audience", grupo: "Simpli.fi", hasId: true },
+  { key: "eskimi_performance", label: "Performance", grupo: "Eskimi", hasId: true },
+  { key: "eskimi_creatives", label: "Creativos", grupo: "Eskimi", hasId: true },
+  { key: "eskimi_gender_performance", label: "Género", grupo: "Eskimi", hasId: true },
+  { key: "eskimi_age_performance", label: "Edad", grupo: "Eskimi", hasId: true },
+  { key: "quantcast_report", label: "Report", grupo: "Quantcast", hasId: false },
+  { key: "quantcast_regions", label: "Regiones", grupo: "Quantcast", hasId: false },
+  { key: "quantcast_creatives", label: "Creativos", grupo: "Quantcast", hasId: false },
+  { key: "hivestack_performance", label: "Performance (pantallas)", grupo: "Hivestack", hasId: false },
+];
+
+// Estado: IDs seleccionados por tabla, cada tabla su propio array.
+const idsPorTabla = {};
+CATALOGO_TABLAS.forEach(t => { idsPorTabla[t.key] = []; });
+
+function pintarTablaSources() {
+  const tbody = document.getElementById("tablaSourcesBody");
+  let grupoActual = null;
+  let html = "";
+  CATALOGO_TABLAS.forEach(t => {
+    if (t.grupo !== grupoActual) {
+      grupoActual = t.grupo;
+      html += `<tr class="grupo-header"><td colspan="4"><span class="grupo-label">${t.grupo}</span></td></tr>`;
+    }
+    html += `
+      <tr data-table="${t.key}">
+        <td><input type="checkbox" class="rowEnable" data-table="${t.key}"></td>
+        <td class="whitespace-nowrap">${t.label}</td>
+        <td><input type="text" class="row-odv" data-table="${t.key}" placeholder="ej. 71-26"></td>
+        <td>
+          ${t.hasId ? `
+            <div class="row-id-box" data-table="${t.key}">
+              <div class="row-id-chips" data-table="${t.key}"></div>
+              <input type="text" class="row-id-input" data-table="${t.key}" placeholder="buscar ID...">
+              <div class="row-id-suggestions hidden" data-table="${t.key}"></div>
+            </div>
+          ` : `<span class="text-[11px] text-[var(--text-soft)]">— (sin campaign_id)</span>`}
+        </td>
+      </tr>`;
+  });
+  tbody.innerHTML = html;
+
+  // Eventos de autocomplete por fila
+  document.querySelectorAll(".row-id-input").forEach(input => {
+    let debounce = null;
+    input.addEventListener("input", (e) => {
+      clearTimeout(debounce);
+      const tabla = e.target.dataset.table;
+      const valor = e.target.value.trim();
+      debounce = setTimeout(() => buscarIdsEnVivo(tabla, valor), 300);
+    });
+  });
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll(".row-id-suggestions").forEach(box => {
+      if (!e.target.closest(`.row-id-box[data-table="${box.dataset.table}"]`)) box.classList.add("hidden");
+    });
+  });
+}
+pintarTablaSources();
+
+async function buscarIdsEnVivo(tabla, query) {
+  const contenedor = document.querySelector(`.row-id-suggestions[data-table="${tabla}"]`);
+  if (!query) { contenedor.classList.add("hidden"); return; }
+  try {
+    const res = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "autocomplete_campaign_ids", table: tabla, query }),
+    });
+    const data = await res.json();
+    const ids = (data.ids || []).filter(id => !idsPorTabla[tabla].includes(id));
+    if (ids.length === 0) { contenedor.classList.add("hidden"); return; }
+    contenedor.innerHTML = ids.map(id => `<div class="row-id-suggestion-item" data-id="${id}">${id}</div>`).join("");
+    contenedor.classList.remove("hidden");
+    contenedor.querySelectorAll(".row-id-suggestion-item").forEach(el => {
+      el.addEventListener("click", () => {
+        idsPorTabla[tabla].push(el.dataset.id);
+        document.querySelector(`.row-id-input[data-table="${tabla}"]`).value = "";
+        contenedor.classList.add("hidden");
+        pintarChipsIdDeTabla(tabla);
+      });
+    });
+  } catch (e) {
+    contenedor.classList.add("hidden");
+  }
+}
+
+function pintarChipsIdDeTabla(tabla) {
+  const box = document.querySelector(`.row-id-chips[data-table="${tabla}"]`);
+  box.innerHTML = idsPorTabla[tabla].map(id => `
+    <span class="row-id-chip">${id} <button type="button" data-tabla="${tabla}" data-id="${id}" class="row-id-remove">✕</button></span>
+  `).join("");
+  box.querySelectorAll(".row-id-remove").forEach(btn => {
+    btn.addEventListener("click", () => {
+      idsPorTabla[tabla] = idsPorTabla[tabla].filter(x => x !== btn.dataset.id);
+      pintarChipsIdDeTabla(tabla);
+    });
+  });
+}
+
+// Fechas por default: ultimos 30 dias
 const startInput = document.getElementById("startDate");
 const endInput = document.getElementById("endDate");
 function toISODate(d) { return d.toISOString().split("T")[0]; }
@@ -399,70 +489,27 @@ function leerFormulas() {
   })).filter(f => f.label && f.expr);
 }
 
-let idsSeleccionados = [];
-let debounceTimer = null;
-
-function sourcesActuales() {
-  return Array.from(document.querySelectorAll(".cfgSource:checked")).map(el => el.value);
-}
-
-function pintarChipsId() {
-  const box = document.getElementById("idChipsBox");
-  const input = document.getElementById("cfgIdBuscar");
-  box.querySelectorAll(".id-chip").forEach(el => el.remove());
-  idsSeleccionados.forEach(id => {
-    const chip = document.createElement("span");
-    chip.className = "id-chip inline-flex items-center gap-1 bg-[#E8F0FE] text-[var(--blue)] text-xs font-medium px-2 py-1 rounded-full";
-    chip.innerHTML = `${id} <button type="button" class="ml-0.5 text-[var(--blue)]">✕</button>`;
-    chip.querySelector("button").addEventListener("click", () => {
-      idsSeleccionados = idsSeleccionados.filter(x => x !== id);
-      pintarChipsId();
-    });
-    box.insertBefore(chip, input);
-  });
-}
-
-async function buscarIdsEnVivo(query) {
-  const contenedor = document.getElementById("idSuggestions");
-  if (!query) { contenedor.classList.add("hidden"); return; }
-  try {
-    const res = await fetch(EDGE_FUNCTION_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "autocomplete_campaign_ids", query, sources: sourcesActuales() }),
-    });
-    const data = await res.json();
-    const ids = (data.ids || []).filter(id => !idsSeleccionados.includes(id));
-    if (ids.length === 0) { contenedor.classList.add("hidden"); return; }
-    contenedor.innerHTML = ids.map(id => `<div class="suggestion-item px-3 py-2 text-sm cursor-pointer hover:bg-[#F5F5F7]" data-id="${id}">${id}</div>`).join("");
-    contenedor.classList.remove("hidden");
-    contenedor.querySelectorAll(".suggestion-item").forEach(el => {
-      el.addEventListener("click", () => {
-        const id = el.dataset.id;
-        if (!idsSeleccionados.includes(id)) idsSeleccionados.push(id);
-        document.getElementById("cfgIdBuscar").value = "";
-        contenedor.classList.add("hidden");
-        pintarChipsId();
-      });
-    });
-  } catch (e) {
-    contenedor.classList.add("hidden");
-  }
-}
-
-document.getElementById("cfgIdBuscar").addEventListener("input", (e) => {
-  clearTimeout(debounceTimer);
-  const valor = e.target.value.trim();
-  debounceTimer = setTimeout(() => buscarIdsEnVivo(valor), 300);
-});
-document.addEventListener("click", (e) => {
-  const box = document.getElementById("idSuggestions");
-  if (!e.target.closest("#idChipsBox") && !e.target.closest("#idSuggestions")) box.classList.add("hidden");
-});
-
 function formatearFechaLarga(iso) {
   const [y, m, d] = iso.split("-");
   return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+}
+
+/* =========================================================================
+ * Armar el array "sources" a partir de las filas habilitadas (checkbox marcado),
+ * cada una con SU PROPIO odv y campaignIds.
+ * ========================================================================= */
+function construirSourcesDesdePanel() {
+  const sources = [];
+  document.querySelectorAll(".rowEnable:checked").forEach(chk => {
+    const tabla = chk.dataset.table;
+    const odvInput = document.querySelector(`.row-odv[data-table="${tabla}"]`);
+    sources.push({
+      table: tabla,
+      odv: odvInput ? odvInput.value.trim() : "",
+      campaignIds: idsPorTabla[tabla] || [],
+    });
+  });
+  return sources;
 }
 
 async function generarReporte() {
@@ -470,13 +517,13 @@ async function generarReporte() {
   errorBanner.classList.add("hidden");
 
   const titulo = document.getElementById("cfgTitulo").value.trim();
-  const odv = document.getElementById("cfgOdv").value.trim();
-  const sources = sourcesActuales();
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
+  const sources = construirSourcesDesdePanel();
 
-  if (!odv && idsSeleccionados.length === 0) { errorBanner.textContent = "Captura un ODV o selecciona al menos un ID de campaña."; errorBanner.classList.remove("hidden"); return; }
-  if (sources.length === 0) { errorBanner.textContent = "Marca al menos un source."; errorBanner.classList.remove("hidden"); return; }
+  if (sources.length === 0) { errorBanner.textContent = "Marca al menos una tabla (checkbox) en Sources."; errorBanner.classList.remove("hidden"); return; }
+  const algunaConFiltro = sources.some(s => s.odv || (s.campaignIds && s.campaignIds.length > 0));
+  if (!algunaConFiltro) { errorBanner.textContent = "Captura un ODV o selecciona un ID en al menos una de las tablas marcadas."; errorBanner.classList.remove("hidden"); return; }
 
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn.disabled = true;
@@ -486,17 +533,23 @@ async function generarReporte() {
     const res = await fetch(EDGE_FUNCTION_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ odv, campaignIds: idsSeleccionados, startDate, endDate, sources }),
+      body: JSON.stringify({ startDate, endDate, sources }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Error ${res.status} al consultar la función.`);
 
     document.getElementById("reportTitle").textContent = titulo || "Reporte de campaña";
-    document.getElementById("platformLabel").textContent = idsSeleccionados.length > 0
-      ? `ID(s) de campaña: ${idsSeleccionados.join(", ")}`
-      : `ODV: ${odv}`;
+    const resumenTablas = sources.filter(s => s.odv || (s.campaignIds && s.campaignIds.length > 0)).map(s => s.table).join(", ");
+    document.getElementById("platformLabel").textContent = `Tablas con filtro: ${resumenTablas || "ninguna"}`;
     document.getElementById("reportDateRange").textContent =
       `${formatearFechaLarga(startDate)} — ${formatearFechaLarga(endDate)} (fijo, no editable por el cliente)`;
+
+    if (data.tablas_sin_filtro && data.tablas_sin_filtro.length > 0) {
+      errorBanner.textContent = `Nota: estas tablas estaban marcadas pero sin ODV/ID, así que se saltaron: ${data.tablas_sin_filtro.join(", ")}`;
+      errorBanner.classList.remove("hidden");
+      errorBanner.classList.remove("text-[#D6003C]");
+      errorBanner.classList.add("text-[#8A6D00]");
+    }
 
     document.getElementById("hKpi").textContent = document.getElementById("tituloKpi").value || "KPI Cards";
     document.getElementById("hPerformance").textContent = document.getElementById("tituloPerformance").value || "Performance";
@@ -617,8 +670,6 @@ function pintarChartResultados(diario) {
   chartResultadosInstance.render();
 }
 
-// Audiencia dinamica: "audiencia" viene como { "Age": [...], "Gender": [...], ... }
-// Se pinta una tarjeta con dona+leyenda por cada categoria que realmente venga en la respuesta.
 const donutInstances = {};
 function pintarAudiencia(audiencia) {
   const grid = document.getElementById("audienciaGrid");
@@ -628,7 +679,7 @@ function pintarAudiencia(audiencia) {
 
   const categorias = Object.keys(audiencia || {});
   if (categorias.length === 0) {
-    grid.innerHTML = `<p class="text-xs text-[var(--text-soft)] col-span-full">Sin datos (habilita simplifi_audience)</p>`;
+    grid.innerHTML = `<p class="text-xs text-[var(--text-soft)] col-span-full">Sin datos (habilita simplifi_audience con su ODV/ID)</p>`;
     return;
   }
 
@@ -676,7 +727,7 @@ function pintarGeofence(rows) {
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.clicks)}</td>
     <td class="py-2 text-right tabular-nums">${g.ctr.toFixed(2)}%</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(g.visits)}</td></tr>
-  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_geofence)</td></tr>`;
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_geofence con su ODV/ID)</td></tr>`;
 }
 
 function pintarPantallas(rows) {
@@ -711,7 +762,7 @@ function pintarTopSites(rows) {
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.clicks)}</td>
     <td class="py-2 text-right tabular-nums">${s.ctr.toFixed(2)}%</td>
     <td class="py-2 text-right tabular-nums">${fmtNumero.format(s.visits)}</td></tr>
-  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_delivery)</td></tr>`;
+  `).join("") || `<tr><td class="py-3 text-[var(--text-soft)]" colspan="5">Sin datos (habilita simplifi_delivery con su ODV/ID)</td></tr>`;
 }
 
 let geoLiftInstance = null;
